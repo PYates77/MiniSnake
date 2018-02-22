@@ -1,21 +1,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-typedef struct part{ //parts form a doubly-linked list to create snake body
-    unsigned char x;
-    unsigned char y;
-    struct part* next;
-    struct part* prev;
-} SnakePart;
-static const unsigned char WIDTH=32; // MUST BE A POWER OF 2 
-static const unsigned char HEIGHT=32; // MUST BE A POWER OF 2
-unsigned char direction = 0; //gives direction of head (2-bit) RIGHT=0, UP=1, LEFT=2, DOWN=3
-SnakePart *head;
-SnakePart *tail;
-SnakePart mouse; //convenient to use snakepart for mouse, but mouse doesn't need next* or prev*
-SnakePart *cur; //used for iteration, defined globally so it doesn't have to be redefined later
-unsigned char collision; // collision flag, defined globally for reuse and so it doesn't have to be redefined later
-
+#include "snake.h"
 
 //Each game tick follows this process
 //// MOVE /////
@@ -28,16 +14,7 @@ unsigned char collision; // collision flag, defined globally for reuse and so it
 // Check head location against all body parts //
 // IF: collision -reset game //
 
-inline void reset(){
-    printf("Snake Died! Time to reset!\n");
-    direction = 0;
-    cur = head;
-    while(cur->next){
-        cur = cur->next;
-        if(cur != tail){
-            free(cur);
-        }
-    }
+inline void init(){
     head->x = WIDTH>>1;
     head->y = HEIGHT>>1;
     head->next = NULL;
@@ -45,7 +22,21 @@ inline void reset(){
     mouse.x = rand()%WIDTH;
     mouse.y = rand()%HEIGHT;
     tail = head;
+    score = 0;
+    direction = 0;
 }
+inline void reset(){ //delete all non-head body parts, reset variables
+    printf("Snake Died! Score: %i\n",score);
+    cur = head;
+    while(cur->next){
+        cur = cur->next;
+        if(cur != tail){
+            free(cur);
+        }
+    }
+    init();
+}
+
 void snake(){
     //printf("Head: (%i, %i) Mouse: (%i,%i)\n",head->x,head->y, mouse.x, mouse.y);
     if(head->x == mouse.x && head->y == mouse.y){ //mouse eaten. mouse is guaranteed not to spawn in a snakepart location
@@ -64,6 +55,7 @@ void snake(){
         cur = (SnakePart*)malloc(sizeof(SnakePart));
         cur->next = head;
         head->prev = cur;
+        ++score;
     }
     else { //mouse not eaten - need to check for body collisions
         cur = head;
@@ -102,6 +94,6 @@ void snake(){
     cur->x=cur->x%WIDTH;
     cur->y=cur->y%HEIGHT;
     head = cur;
-
+    
 }
 

@@ -1,9 +1,8 @@
 //
 // Created by Paul on 2/21/2018.
 //
-#include "snake.h"
 #include <GL/glut.h>
-
+#include "snake.h"
 const char title[] = "Snake";
 const int windowWidth = 512;
 const int windowHeight = 512;
@@ -81,8 +80,8 @@ int main(int argc, char** argv){
     mouse.y = rand()%HEIGHT;
 
     glutInit(&argc, argv);
-    glutInitWindowSize(windowWidth, windowHeight);
-    glutInitWindowPosition(screenOffsetX,screenOffsetY);
+    //glutInitWindowSize(windowWidth, windowHeight);
+    //glutInitWindowPosition(screenOffsetX,screenOffsetY);
     glutCreateWindow(title);
     glutDisplayFunc(display);
     glutSpecialFunc(specialKeys);
