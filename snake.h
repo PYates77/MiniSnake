@@ -1,7 +1,3 @@
-//
-// Created by Paul on 2/21/2018.
-//
-
 #ifndef MINISNAKE_SNAKE_H
 #define MINISNAKE_SNAKE_H
 typedef struct part{ //parts form a doubly-linked list to create snake body
