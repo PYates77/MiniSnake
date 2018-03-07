@@ -29,9 +29,11 @@ extern inline void snake_init(){
 extern inline void snake_reset(){ //delete all non-head body parts, reset variables
     printf("Snake Died! Score: %i\n",score);
     cur = head;
+    SnakePart* temp;
     while(1){
+        temp = cur->next;
         free(cur);
-        if(cur->next) cur=cur->next;
+        if(temp) cur=temp;
         else break;
     }
     snake_init();
