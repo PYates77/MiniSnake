@@ -1,7 +1,9 @@
 //
 // Created by Paul on 2/21/2018.
 //
+#define GLUT_DISABLE_ATEXIT_HACK
 #include <GL/glut.h>
+#include <time.h>
 #include "snake.h"
 const char title[] = "Snake";
 const int windowWidth = 512;

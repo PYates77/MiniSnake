@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
 project(miniSnake)
 
+list(APPEND CMAKE_PREFIX_PATH "E:/Tools/glew-2.1.0")
+list(APPEND CMAKE_PREFIX_PATH "E:/Tools/freeglut")
+
 # Find packages of additional libraries
 #   - GLEW
 find_package( GLEW REQUIRED )
