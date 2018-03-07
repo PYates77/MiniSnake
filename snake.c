@@ -14,7 +14,7 @@
 // Check head location against all body parts //
 // IF: collision -reset game //
 
-extern inline void snake_init(){
+inline void snake_init(){
     head = (SnakePart *)malloc(sizeof(SnakePart));
     head->x = WIDTH>>1;
     head->y = HEIGHT>>1;
@@ -26,7 +26,7 @@ extern inline void snake_init(){
     score = 0;
     direction = 0;
 }
-extern inline void snake_reset(){ //delete all non-head body parts, reset variables
+inline void snake_reset(){ //delete all non-head body parts, reset variables
     printf("Snake Died! Score: %i\n",score);
     cur = head;
     SnakePart* temp;
