@@ -23,6 +23,12 @@ inline void snake_init(){
     mouse.x = rand()%WIDTH;
     mouse.y = rand()%HEIGHT;
     tail = head;
+    cur = tail;
+    cur->next = head;
+    head->prev = cur;
+    tail = tail->prev;
+    tail->next = NULL;
+    cur->prev = NULL;
     score = 0;
     direction = 0;
 }
@@ -40,35 +46,15 @@ inline void snake_reset(){ //delete all non-head body parts, reset variables
 }
 
 void snake(){
-    //printf("Head: (%i, %i) Mouse: (%i,%i)\n",head->x,head->y, mouse.x, mouse.y);
-    if(head->x == mouse.x && head->y == mouse.y){ //mouse eaten. mouse is guaranteed not to spawn in a snakepart location
-        do {
-            mouse.x = rand()%WIDTH;
-            mouse.y = rand()%HEIGHT;
-            cur = head;
-            collision = 0;
-            do {
-                collision = (mouse.x == cur->x && mouse.y == cur->y);
-                if(!cur->next) break;
-                else cur = cur->next;
-            } while ( collision == 0 );
-        } while ( collision == 1);
-        //make a new snake part and put it in front of the head
+    // CHECK MOUSE EATEN EVENT //
+    if(flag){
         cur = (SnakePart*)malloc(sizeof(SnakePart));
         cur->next = head;
         head->prev = cur;
         ++score;
+        flag = 0; //reset flag
     }
-    else { //mouse not eaten - need to check for body collisions
-        cur = head;
-        while(cur->next){
-            cur = cur->next;
-            if(cur->x == head->x && cur->y == head->y){
-                //GAME OVER CONDITION
-                snake_reset();
-                break;
-            }
-        }
+    else{
         cur = tail;
         cur->next = head;
         head->prev = cur;
@@ -81,21 +67,48 @@ void snake(){
     cur->y = head->y;
     switch(direction){
         case 0:
-            cur->x=(head->x+1);
+            cur->x=(cur->x+1);
             break;
         case 1:
-            cur->y=(head->y+1);
+            cur->y=(cur->y+1);
             break;
         case 2:
-            cur->x=(head->x-1);
+            cur->x=(cur->x-1);
             break;
         case 3:
-            cur->y=(head->y-1);
+            cur->y=(cur->y-1);
             break;
     }
     cur->x=cur->x%WIDTH;
     cur->y=cur->y%HEIGHT;
     head = cur;
     
+    //printf("Head: (%i, %i) Mouse: (%i,%i)\n",head->x,head->y, mouse.x, mouse.y);
+    if(head->x == mouse.x && head->y == mouse.y){ //mouse eaten. mouse is guaranteed not to spawn in a snakepart location
+        do {
+            mouse.x = rand()%WIDTH;
+            mouse.y = rand()%HEIGHT;
+            cur = head;
+            flag = 0; //flag being used for collision detection
+            do {
+                flag = (mouse.x == cur->x && mouse.y == cur->y);
+                if(!cur->next) break;
+                else cur = cur->next;
+            } while ( flag == 0 );
+        } while ( flag == 1);
+        //make a new snake part and put it in front of the head
+        flag = 1; //flag being used for mouse eaten event 
+    }
+    else { //mouse not eaten - need to check for body collisions
+        cur = head;
+        while(cur->next){
+            cur = cur->next;
+            if(cur->x == head->x && cur->y == head->y){
+                //GAME OVER CONDITION
+                snake_reset();
+                break;
+            }
+        }
+    }
 }
 

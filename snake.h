@@ -14,7 +14,7 @@ SnakePart *head;
 SnakePart *tail;
 SnakePart mouse; //convenient to use snakepart for mouse, but mouse doesn't need next* or prev*
 SnakePart *cur; //used for iteration, defined globally so it doesn't have to be redefined later
-unsigned char collision; // collision flag, defined globally for reuse and so it doesn't have to be redefined later
+unsigned char flag; // multipurpose flag, defined globally for reuse and so it doesn't have to be redefined later
 
 extern inline void snake_init();
 extern inline void snake_reset();
