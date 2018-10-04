@@ -16,8 +16,8 @@ SnakePart mouse; //convenient to use snakepart for mouse, but mouse doesn't need
 SnakePart *cur; //used for iteration, defined globally so it doesn't have to be redefined later
 unsigned char flag; // multipurpose flag, defined globally for reuse and so it doesn't have to be redefined later
 
-extern inline void snake_init();
-extern inline void snake_reset();
+void snake_init();
+void snake_reset();
 void snake(void);
 
 #endif //MINISNAKE_SNAKE_H
