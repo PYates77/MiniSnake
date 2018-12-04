@@ -1,32 +1,11 @@
 cmake_minimum_required(VERSION 3.9)
 project(miniSnake)
 
-list(APPEND CMAKE_PREFIX_PATH "E:/Tools/glew-2.1.0")
-list(APPEND CMAKE_PREFIX_PATH "E:/Tools/freeglut")
-
-# Find packages of additional libraries
-#   - GLEW
-find_package( GLEW REQUIRED )
-if ( GLEW_FOUND )
-    include_directories( ${GLEW_INCLUDE_DIRS} )
-    link_libraries     ( ${GLEW_LIBRARIES}    )
-endif()
-
-#   - GLUT
-find_package( GLUT REQUIRED )
-if ( GLUT_FOUND )
-    include_directories( ${GLUT_INCLUDE_DIR} )
-    link_libraries     ( ${GLUT_LIBRARIES}    )
-endif()
-
-#   - OpenGL
-find_package( OpenGL REQUIRED )
-if ( OPENGL_FOUND )
-    include_directories( ${OPENGL_INCLUDE_DIRS} )
-    link_libraries     ( ${OPENGL_LIBRARIES}    )
-endif()
-
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(miniSnake
-        snake.c snake_opengl.c snake.h)
+include_directories(include /usr/include)
+
+add_executable(asciiSnake ${CMAKE_CURRENT_SOURCE_DIR}/src/snake.c ${CMAKE_CURRENT_SOURCE_DIR}/src/snake_ascii.c)
+
+target_link_libraries(asciiSnake /usr/lib/x86_64-linux-gnu/libcurses.so)
+
