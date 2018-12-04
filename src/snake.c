@@ -14,7 +14,7 @@
 // Check head location against all body parts //
 // IF: collision -reset game //
 
-SnakeGame * snake_init(unsigned char width, unsigned char height){ //set up all variables and memory
+SnakeGame * snake_init(uint8_t width, uint8_t height){ //set up all variables and memory
     SnakeGame * game = (SnakeGame *)malloc(sizeof(SnakeGame));
     game->width = width;
     game->height = height;
@@ -36,7 +36,7 @@ SnakeGame * snake_init(unsigned char width, unsigned char height){ //set up all 
     game->tail->next = NULL;
     cur->prev = NULL;
     game->score = 0;
-    game->direction = 0;
+    game->direction = DIRECTION_POS_X;
     return game;
 }
 void snake_reset(SnakeGame * game){ //delete all non-head body parts, reset variables
@@ -67,7 +67,7 @@ void snake_reset(SnakeGame * game){ //delete all non-head body parts, reset vari
     game->tail->next = NULL;
     cur->prev = NULL;
     game->score = 0;
-    game->direction = 0;
+    game->direction = DIRECTION_POS_X;
 }
 
 void snake(SnakeGame * game){
@@ -95,16 +95,16 @@ void snake(SnakeGame * game){
     cur->x = game->head->x;
     cur->y = game->head->y;
     switch(game->direction){
-        case 0:
+        case DIRECTION_POS_X:
             cur->x=(cur->x+1);
             break;
-        case 1:
+        case DIRECTION_POS_Y:
             cur->y=(cur->y+1);
             break;
-        case 2:
+        case DIRECTION_NEG_X:
             cur->x=(cur->x-1);
             break;
-        case 3:
+        case DIRECTION_NEG_Y:
             cur->y=(cur->y-1);
             break;
     }
