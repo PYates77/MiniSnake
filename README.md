@@ -28,7 +28,7 @@ All the relevant snake game data is contained within the SnakeGame struct, and g
  } SnakeGame;
  ```
  
- The snake formed by a doubly-linked list of SnakeParts, which simply contain a location. The entire snake can be accessed by traversing the list starting at the head pointer in the SnakeGame struct.
+ The snake is formed by a doubly-linked list of SnakeParts, which each contain an x-y location for the SnakePart. The entire snake can be accessed by traversing the list starting at the head pointer in the SnakeGame struct.
  
  ```c
  /* parts form a doubly-linked list to create snake body */
@@ -40,7 +40,7 @@ All the relevant snake game data is contained within the SnakeGame struct, and g
  } SnakePart;
 ```
 
-Oh and if opening snake.h is too difficult, here's the only other thing you need to know:
+Oh and if opening snake.h to read it is too difficult, here's the only other thing you need to know:
 
 ```c
 enum SnakeDirection{
