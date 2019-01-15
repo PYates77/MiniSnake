@@ -2,7 +2,7 @@
 // Created by Paul on 2/21/2018.
 //
 #include <GL/glut.h>
-#include "../../snake.h"
+#include "snake.h"
 #include <stdio.h>
 #include <string.h>
 const char title[] = "Snake";
@@ -75,8 +75,8 @@ int playRecursiveSnake(SnakeGame recursiveGame, int depth)
     int numAliveSnakes = 0;
     int aliveSnake = 0;
     for(i=0; i<4; ++i){
-        snake(&games[i]);
-        if(games[i].flag && !games[i].gameover){
+        snake_tick(&games[i]);
+        if(games[i].mouse_eaten){
             //mouse eaten! return this direction!!!
             printf("\n\n\n\n\n\nMOUSE EATEN PATH FOUND\n\n\n\n\n");
             return i;
@@ -141,7 +141,7 @@ void processAI(){
 void display()
 {
     processAI();
-    snake(game);
+    snake_tick(game);
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

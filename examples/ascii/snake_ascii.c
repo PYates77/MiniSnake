@@ -8,7 +8,8 @@
 
 static SnakeGame * game;
 
-int partAt(int x, int y){
+int part_at(int x, int y)
+{
     SnakePart * cur = game->head;
     while(1){
         if(cur->x == x && cur->y == y)  return 1;
@@ -16,13 +17,14 @@ int partAt(int x, int y){
         cur = cur->next;
     }
 }
-void processAI(){
+void process_ai()
+{
     //check to see which directions are valid
     int invalid[4];
-    invalid[0]= partAt(game->head->x+1,game->head->y);  //right
-    invalid[1]= partAt(game->head->x,game->head->y+1);  //up
-    invalid[2]= partAt(game->head->x-1, game->head->y); //left
-    invalid[3]= partAt(game->head->x, game->head->y-1); //down
+    invalid[0]= part_at(game->head->x+1,game->head->y);  //right
+    invalid[1]= part_at(game->head->x,game->head->y+1);  //up
+    invalid[2]= part_at(game->head->x-1, game->head->y); //left
+    invalid[3]= part_at(game->head->x, game->head->y-1); //down
     
     //start by setting the direction to any valid one
     int i=0;
@@ -87,7 +89,7 @@ int main()
 
         //get player or ai input
 #ifdef USE_AI
-        processAI();
+        process_ai();
 #else
         int ch = getch();
         //NOTE: Up and down are flipped since snake doesn't use 'screen' coordinates

@@ -2,6 +2,7 @@
 #define MINISNAKE_SNAKE_H
 
 #include <stdint.h>
+#include <time.h>
 
 enum SnakeDirection
 {
