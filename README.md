@@ -1,4 +1,4 @@
-https://github.com/PYates77/MiniSnake# MiniSnake
+# MiniSnake #
 
 A very small and simple library for creating custom snake games. 
 
