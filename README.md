@@ -85,3 +85,19 @@ void super_simple_snake_game(){
 } 
 ```
 
+## Examples ##
+
+### ASCII Snake ###
+You'll need to install ncurses-dev, so for ubuntu that would be 
+
+```bash
+sudo apt-get install libncurses-dev
+```
+
+If you use some other distro that doesn't use apt I'm sure you can figure it out.
+
+### OpenGL Snake ###
+
+You will need: GLEW (libglew-dev) and GLUT (freeglut3-dev,libxmu-dev, libxi-dev) 
+
+I also toyed with creating snake playing AI's in this folder, so you can either ignore those or try to improve upon them because, let's be honest, you're a better programmer than me and you can probably figure out a simple snake-playing AI.
