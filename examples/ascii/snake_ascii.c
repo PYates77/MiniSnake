@@ -108,7 +108,7 @@ int main()
 #endif
 
         // process game tick
-        snake(game);
+        snake_tick(game);
 
         // process game events
         if(game->gameover)

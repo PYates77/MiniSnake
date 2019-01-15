@@ -6,7 +6,8 @@
 #include <time.h>
 #include <stdio.h>
 
-enum SnakeDirection{
+enum SnakeDirection
+{
     DIRECTION_POS_X = 0,
     DIRECTION_POS_Y = 1,
     DIRECTION_NEG_X = 2,
@@ -14,7 +15,8 @@ enum SnakeDirection{
 };
 
 /* parts form a doubly-linked list to create snake body */
-typedef struct part{     
+typedef struct part
+{     
     unsigned int x;
     unsigned int y;
     struct part* next;
@@ -22,7 +24,8 @@ typedef struct part{
 } SnakePart;
 
 /* holds game info so we can pass the pointer as a handle */
-typedef struct game{ 
+typedef struct game
+{ 
     /* gives direction of head */
     enum SnakeDirection direction; 
     /* The number of mice eaten since the snake died last */
@@ -36,22 +39,14 @@ typedef struct game{
     unsigned int  height;
     /* signal that the snake died, useful if you want to display the score or end the game */
     uint8_t gameover; 
-    /* multipurpose flag, signals mouse eaten or snake collision */
-    uint8_t flag; 
+    /* signals mouse eaten event, useful if you want to update the score or play an animation */
+    uint8_t mouse_eaten; 
 } SnakeGame;
 
-//Each game tick follows this process
-//// MOVE /////
-// Check for mouse eaten - head location == mouse location
-// IF: no mouse eaten just before - move the tail snakepart to the correct new head location 
-// IF: mouse just eaten - new snake part in correct new head location - move mouse to new location 
-// Using screen wrap around logic for now
-// update head*
-//// CHECK COLLISION ////
-// Check head location against all body parts //
-// IF: collision -reset game //
 
-extern inline SnakeGame * snake_init(unsigned int width, unsigned int height){ //set up all variables and memory
+extern inline SnakeGame * snake_init(unsigned int width, unsigned int height)
+{ 
+    //set up all variables and memory
     SnakeGame * game = (SnakeGame *)malloc(sizeof(SnakeGame));
     game->width = width;
     game->height = height;
@@ -107,18 +102,29 @@ extern inline void snake_reset(SnakeGame * game){ //delete all non-head body par
     game->direction = DIRECTION_POS_X;
 }
 
-extern inline void snake(SnakeGame * game){
+//Each game tick follows this process
+//// MOVE /////
+// Check for mouse eaten - head location == mouse location
+// IF: no mouse eaten just before - move the tail snakepart to the correct new head location 
+// IF: mouse just eaten - new snake part in correct new head location - move mouse to new location 
+// Using screen wrap around logic for now
+// update head*
+//// CHECK COLLISION ////
+// Check head location against all body parts //
+// IF: collision - reset game //
+extern inline void snake_tick(SnakeGame * game)
+{
     if(game->gameover){
         snake_reset(game);
     }
     // CHECK MOUSE EATEN EVENT //
     SnakePart * cur;
-    if(game->flag){
+    if(game->mouse_eaten){
         cur = (SnakePart*)malloc(sizeof(SnakePart));
         cur->next = game->head;
         game->head->prev = cur;
         ++game->score;
-        game->flag = 0; //reset flag
+        game->mouse_eaten = 0; //reset mouse eaten flag
     }
     else{
         cur = game->tail;
@@ -151,23 +157,29 @@ extern inline void snake(SnakeGame * game){
     
     //printf("Head: (%i, %i) Mouse: (%i,%i)\n",head->x,head->y, mouse.x, mouse.y);
     // MOUSE EATEN EVENT //
-    if(game->head->x == game->mouse.x && game->head->y == game->mouse.y){ //mouse is guaranteed not to spawn in a snakepart location
+    //mouse is guaranteed not to spawn in a snakepart location
+    if(game->head->x == game->mouse.x && game->head->y == game->mouse.y){ 
+        uint8_t flag;
+        //set mouse to random location until this location does not contain a snakepart
         do {
             game->mouse.x = rand()%game->width;
             game->mouse.y = rand()%game->height;
             cur = game->head;
-            game->flag = 0; //flag being used for collision detection
+            flag = 0; 
             do {
-                game->flag = (game->mouse.x == cur->x && game->mouse.y == cur->y);
+                flag = (game->mouse.x == cur->x && game->mouse.y == cur->y); 
                 if(!cur->next) break;
                 else cur = cur->next;
-            } while ( game->flag == 0 );
-        } while ( game->flag == 1);
-        //make a new snake part and put it in front of the head
-        game->flag = 1; //flag being used for mouse eaten event 
+            } while ( flag == 0 );
+        } while ( flag == 1);
+
+        // mouse eaten event will be handled in the next game tick
+        game->mouse_eaten = 1; 
     }
+
     // MOUSE NOT EATEN EVENT //
-    else { // need to check for body collisions
+    // need to check for body collisions 
+    else { 
         cur = game->head;
         while(cur->next){
             cur = cur->next;
