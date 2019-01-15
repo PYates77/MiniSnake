@@ -1,4 +1,4 @@
-# MiniSnake
+https://github.com/PYates77/MiniSnake# MiniSnake
 
 A very small and simple library for creating custom snake games. 
 
@@ -33,7 +33,8 @@ typedef struct game
  
  ```c
  /* parts form a doubly-linked list to create snake body */
- typedef struct part{     
+ typedef struct part
+ {     
      unsigned int x;
      unsigned int y;
      struct part* next;
@@ -44,7 +45,8 @@ typedef struct game
 Oh and if opening snake.h to read it is too difficult, here's the only other thing you need to know:
 
 ```c
-enum SnakeDirection{
+enum SnakeDirection
+{
      DIRECTION_POS_X = 0,
      DIRECTION_POS_Y = 1,
      DIRECTION_NEG_X = 2,
