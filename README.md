@@ -34,8 +34,8 @@ typedef struct game
  ```c
  /* parts form a doubly-linked list to create snake body */
  typedef struct part{     
-     uint8_t x;
-     uint8_t y;
+     unsigned int x;
+     unsigned int y;
      struct part* next;
      struct part* prev;
  } SnakePart;
