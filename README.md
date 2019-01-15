@@ -112,4 +112,4 @@ If you use some other distro that doesn't use apt I'm sure you can figure it out
 
 You will need: GLEW (libglew-dev) and GLUT (freeglut3-dev,libxmu-dev, libxi-dev) 
 
-I also toyed with creating snake playing AI's in this folder, so you can either ignore those or try to improve upon them because, let's be honest, you're a better programmer than me and you can probably figure out a simple snake-playing AI.
+I also toyed with creating snake-playing AI's in this folder, so you can either ignore those or try to improve upon them because, let's be honest, you're a better programmer than me and you can probably figure out a simple snake AI.
