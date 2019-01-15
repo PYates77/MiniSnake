@@ -89,7 +89,7 @@ void super_simple_snake_game(){
 
 ## Examples ##
 
-Unless you enjoy playing text-only versions of snake, chances are you'll probably want to have some code that can display the game in a friendly, human-viewable manner. Chances are also pretty good that you're too lazy to do that from scratch, so navigate over to the examples directory. And do the regular cmake thing to build one of the examples:
+Unless you enjoy playing text-only versions of snake, chances are you'll probably want to have some code that can display the game in a friendly, human-viewable manner. Chances are also pretty good that you're too lazy to do that from scratch, so navigate over to the examples directory and do the regular cmake thing to build one of the examples:
 
 ```bash
 cd examples/ascii
