@@ -4,13 +4,14 @@
 #define GLUT_DISABLE_ATEXIT_HACK
 #include <GL/glut.h>
 #include <time.h>
-#include "snake.h"
+#include "../../snake.h"
 const char title[] = "Snake";
 const int windowWidth = 512;
 const int windowHeight = 512;
 const int refreshMillis = 50;
 const int screenOffsetX = 300;
 const int screenOffsetY = 100;
+SnakeGame * game;
 float temp = 0;
 void initGL(){
     glClearColor(0.0,0.0,0.0,1.0); //black background
@@ -18,30 +19,34 @@ void initGL(){
 void specialKeys(int key, int mouseX, int mouseY){
     switch(key){
         case GLUT_KEY_RIGHT:
-            direction = 0;
+            game->direction = 0;
             break;
         case GLUT_KEY_UP:
-            direction = 1;
+            game->direction = 1;
             break;
         case GLUT_KEY_LEFT:
-            direction = 2;
+            game->direction = 2;
             break;
         case GLUT_KEY_DOWN:
-            direction = 3;
+            game->direction = 3;
             break;
     }
 }
-void display(){
-    snake();
+void display()
+{
+    snake(game);
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    cur = head;
-    float offsetX = 1.0f/(WIDTH/2);
-    float offsetY = 1.0f/(HEIGHT/2);
+    SnakePart * cur = game->head;
+    float offsetX = 1.0f/(game->width/2);
+    float offsetY = 1.0f/(game->height/2);
     glBegin(GL_QUADS);
-    float x = (float)(mouse.x-HEIGHT/2)/(HEIGHT/2);
-    float y = (float)(mouse.y-HEIGHT/2)/(HEIGHT/2);
+    SnakePart mouse = game->mouse;
+    int x_adjust = mouse.x-game->width/2;
+    int y_adjust = mouse.y-game->height/2;
+    float x = (float)(x_adjust)/(game->width/2);
+    float y = (float)(y_adjust)/(game->height/2);
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex2f(x,y);
     glVertex2f(x,y+offsetY);
@@ -49,8 +54,10 @@ void display(){
     glVertex2f(x+offsetX,y);
     glEnd();
     while(1){
-        float x = (float)(cur->x-HEIGHT/2)/(HEIGHT/2);
-        float y = (float)(cur->y-HEIGHT/2)/(HEIGHT/2);
+        int x_adjust = cur->x-game->width/2;
+        int y_adjust = cur->y-game->height/2;
+        float x = (float)(x_adjust)/(float)(game->width/2);
+        float y = (float)(y_adjust)/(float)(game->height/2);
         glBegin(GL_QUADS);
         glColor3f(1.0f, 1.0f, 1.0f);
         glVertex2f(x, y);
@@ -72,14 +79,7 @@ void Timer(int value){
 }
 int main(int argc, char** argv){
     srand(time(NULL));
-    head = (SnakePart*)malloc(sizeof(SnakePart));
-    head->x = WIDTH>>1;
-    head->y = HEIGHT>>1;
-    head->next = NULL;
-    head->prev = head;
-    tail = head;
-    mouse.x = rand()%WIDTH;
-    mouse.y = rand()%HEIGHT;
+    game = snake_init(windowHeight/16, windowWidth/16);
 
     glutInit(&argc, argv);
     //glutInitWindowSize(windowWidth, windowHeight);

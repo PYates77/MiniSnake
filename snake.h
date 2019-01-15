@@ -15,8 +15,8 @@ enum SnakeDirection{
 
 /* parts form a doubly-linked list to create snake body */
 typedef struct part{     
-    uint8_t x;
-    uint8_t y;
+    unsigned int x;
+    unsigned int y;
     struct part* next;
     struct part* prev;
 } SnakePart;
@@ -32,8 +32,8 @@ typedef struct game{
     /* convenient to use snakepart for mouse, but mouse doesn't need the next or prev pointers */
     SnakePart mouse; 
     /* The playing field width and height */
-    uint8_t width;
-    uint8_t height;
+    unsigned int  width;
+    unsigned int  height;
     /* signal that the snake died, useful if you want to display the score or end the game */
     uint8_t gameover; 
     /* multipurpose flag, signals mouse eaten or snake collision */
@@ -51,7 +51,7 @@ typedef struct game{
 // Check head location against all body parts //
 // IF: collision -reset game //
 
-extern inline SnakeGame * snake_init(uint8_t width, uint8_t height){ //set up all variables and memory
+extern inline SnakeGame * snake_init(unsigned int width, unsigned int height){ //set up all variables and memory
     SnakeGame * game = (SnakeGame *)malloc(sizeof(SnakeGame));
     game->width = width;
     game->height = height;
