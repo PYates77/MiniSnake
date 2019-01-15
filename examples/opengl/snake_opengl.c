@@ -34,7 +34,7 @@ void specialKeys(int key, int mouseX, int mouseY){
 }
 void display()
 {
-    snake(game);
+    snake_tick(game);
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
