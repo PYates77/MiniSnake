@@ -54,11 +54,11 @@ enum SnakeDirection{
 
 ## Running a game of snake ##
 
-Playing a game of snake is dead simple: 
+Playing a game of snake is super simple: 
 
 * Create a snake game with some playing field size
 * In a loop, call the snake\_tick() function with the pointer to the SnakeGame to process one tick of the game.
-* In-between calls to the snake() function, read the location of the mouse and body parts, and control the direction of the snake's head.
+* In-between calls to the snake\_tick() function, read the location of the mouse and body parts, and control the direction of the snake's head.
 * Optionally, read the score and the gameover flag
 
 ```c
