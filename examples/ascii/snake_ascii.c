@@ -47,8 +47,9 @@ void process_ai()
 }
 int main()
 {
-    game = snake_init(32, 32);
 
+    int gameWidth = 32;
+    int gameHeight = 32;
     //setup curses
     initscr();
     start_color();
@@ -66,7 +67,14 @@ int main()
         init_pair(2, COLOR_WHITE, COLOR_WHITE);
         init_pair(3, -1, -1);
     }
+    getmaxyx(stdscr, gameHeight, gameWidth);
+
+    printf("Terminal Height: %d, terminal width: %d\n", gameHeight, gameWidth);
+
     //done setting up curses
+
+    game = snake_init(gameWidth/2, gameHeight-2);
+    printf("Game height %d, game width %d\n", game->height, game->width);
 
 
     //begin display loop

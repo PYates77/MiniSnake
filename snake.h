@@ -16,8 +16,8 @@ enum SnakeDirection
 /* parts form a doubly-linked list to create snake body */
 typedef struct part
 {     
-    unsigned int x;
-    unsigned int y;
+    int x;
+    int y;
     struct part* next;
     struct part* prev;
 } SnakePart;
@@ -144,12 +144,23 @@ extern inline void snake_tick(SnakeGame * game)
             cur->y=(cur->y+1);
             break;
         case DIRECTION_NEG_X:
-            cur->x=(cur->x-1);
+            // handle underflow
+            if (cur->x == 0) {
+                cur->x = game->width - 1;
+            } else {
+                cur->x=(cur->x-1);
+            }
             break;
         case DIRECTION_NEG_Y:
-            cur->y=(cur->y-1);
+            // handle underflow
+            if (cur->y == 0) {
+                cur->y = game->height -1;
+            } else {
+                cur->y=(cur->y-1);
+            }
             break;
     }
+    // handle x y positions too large
     cur->x=cur->x%game->width;
     cur->y=cur->y%game->height;
     game->head = cur;
