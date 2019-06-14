@@ -64,27 +64,39 @@ Playing a game of snake is super simple:
 * Optionally, read the score and the gameover flag
 
 ```c
+/* 
+ * An incredibly simple (and not fun at all) text-based only snake implementation 
+ * Check out examples/simple/ for the complete example
+ */
+
 #include "snake.h"
-void super_simple_snake_game(){
-  SnakeGame * game = snake_init(32, 32);
+#include <stdio.h>
+
+int main()
+{
+  SnakeGame *game = snake_init(32, 32);
   while(!game->gameover){
     //display some information about the snake game
     printf("Mouse At %d x %d\n",game->mouse.x, game->mouse.y);
-    SnakePart * current = game->head;
+    SnakePart *current = game->head;
     printf("Snake Head at %d x %d\n", current->x, current->y);
     while(current->next != NULL){
       current = current->next;
-      printf("Snake Body Part at %d x %d\n", current.x, current.y);
+      printf("Snake Body Part at %d x %d\n", current->x, current->y);
     }
     printf("The score is %d\n", game->score);
     
     //get user input 
-    game->direction = get_user_input_direction(); //should be 0 through 3 for 4 different possible directions
+    game->direction = get_user_input_direction(); //Should return a SnakeDirection enum
     
     //process a game tick
     snake_tick(game);
   }
+
+  printf("Game over, final score: %d\n", game->score);
+  return 0;
 } 
+
 ```
 
 ## Examples ##
