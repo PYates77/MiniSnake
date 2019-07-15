@@ -28,6 +28,34 @@ void initGL()
 {
     glClearColor(0.0,0.0,0.0,1.0); //black background
 }
+
+/* Will there be a part here at some time step? */
+int partAtLater(int x, int y, int t) 
+{
+    if (x < 0) {
+        x = game->width - 1;
+    }
+    if (y < 0) {
+        y = game->height - 1;
+    }
+    x = x % game->width;
+    y = y % game->height;
+
+    SnakePart *cur = game->tail;
+    /* Skip the first t snake parts from the tail */
+    int i;
+    for(i=0; i<t; ++i) {
+        if (!cur->prev) return 0;
+        cur = cur->prev;
+    }
+
+    while(1) {
+        if(cur->x == x && cur->y == y) return 1;
+        if (!cur->prev) return 0;
+        cur = cur->prev;
+    }
+
+}
 int partAt(int x, int y)
 {
     SnakePart *cur = game->head;
@@ -48,6 +76,14 @@ int bad(int x, int y) {
 
 int planned(int x, int y) {
     int i;
+    if (x < 0) {
+        x = game->width - 1;
+    }
+    if (y < 0) {
+        y = game->height - 1;
+    }
+    x = x % game->width;
+    y = y % game->height;
     for (i=0; i<plan_len; ++i){
         if(plan_squares[i].x == x && plan_squares[i].y == y) {
             return 1;
@@ -59,15 +95,16 @@ int planned(int x, int y) {
 int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
 {
     int invalid[4];
-    invalid[0]= partAt(x+1,y) || bad(x+1,y) || planned(x+1, y);  //right
-    invalid[1]= partAt(x,y+1) || bad(x,y+1) || planned(x,y+1);  //up
-    invalid[2]= partAt(x-1, y) || bad(x-1, y) || planned(x-1, y); //left
-    invalid[3]= partAt(x,y-1) || bad(x,y-1) || planned(x,y-1); //down
+    invalid[0] = partAtLater(x+1,y, plan_len) || bad(x+1,y) || planned(x+1, y);  //right
+    invalid[1] = partAtLater(x,y+1, plan_len) || bad(x,y+1) || planned(x,y+1);  //up
+    invalid[2] = partAtLater(x-1, y, plan_len) || bad(x-1, y) || planned(x-1, y); //left
+    invalid[3] = partAtLater(x,y-1, plan_len) || bad(x,y-1) || planned(x,y-1); //down
 
     printf("Planning at %d, %d, invalid[] = {%d, %d, %d, %d}\n", x,y,invalid[0], invalid[1], invalid[2], invalid[3]);
 
     // if all directions are invalid, this is not a valid plan
     if (invalid[0] && invalid[1] && invalid[2] && invalid[3]) {
+        printf("NO VALID PATHS! BACKING UP!\n");
         return 0;
     }
 
@@ -79,29 +116,53 @@ int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
     }
 
     if(x != game->mouse.x || y != game->mouse.y){ 
-        if(!invalid[0] && x < game->mouse.x){
+        if(!invalid[0] && x < game->mouse.x) {
             cur_direction = 0; //right
-            plan_squares[plan_len].x = x+1;
-            plan_squares[plan_len].y = y;
-        }
-        else if (!invalid[2] && x > game->mouse.x){
+        } else if (!invalid[2] && x > game->mouse.x) {
             cur_direction = 2; //left 
-            plan_squares[plan_len].x = x-1;
-            plan_squares[plan_len].y = y;
-        }
-        else if (!invalid[1] && y < game->mouse.y){
+        } else if (!invalid[1] && y < game->mouse.y) {
             cur_direction = 1; //up
-            plan_squares[plan_len].x = x;
-            plan_squares[plan_len].y = y+1;
-        }
-        else if (!invalid[3]) {
+        } else if (!invalid[3]) {
             cur_direction = 3; //down 
-            plan_squares[plan_len].x = x;
-            plan_squares[plan_len].y = y-1;
+        } 
+
+        switch(cur_direction) {
+            case 0:
+                plan_squares[plan_len].x = x+1;
+                plan_squares[plan_len].y = y;
+                break;
+            case 1:
+                plan_squares[plan_len].x = x;
+                plan_squares[plan_len].y = y+1;
+                break;
+            case 2:
+                /* handle underflow */
+                if (x-1 < 0) {
+                    plan_squares[plan_len].x = game->width - 1;
+                } else {
+                    plan_squares[plan_len].x = x-1;
+                }
+                plan_squares[plan_len].y = y;
+                break;
+            case 3:
+                /* handle underflow */
+                if (y-1 < 0) {
+                    plan_squares[plan_len].y = game->height - 1;
+                } else {
+                    plan_squares[plan_len].y = y-1;
+                }
+                plan_squares[plan_len].x = x;
+                break;
+            default:
+                printf("FATAL ERROR: DIRECTION INVALID\n");
         }
 
+        /* handle overflow */
+        plan_squares[plan_len].x = plan_squares[plan_len].x % game->width;
+        plan_squares[plan_len].y = plan_squares[plan_len].y % game->height;
+
         plan[plan_len] = cur_direction;
-        printf("Adding direction %d to plan (%d, %d)\n", plan[plan_len], plan_squares[plan_len].x, plan_squares[plan_len].y);
+        printf("Plan head (%d, %d). Adding direction %d to plan[%d] (%d, %d)\n", x, y, plan[plan_len], plan_len, plan_squares[plan_len].x, plan_squares[plan_len].y);
         ++plan_len;
         
         int res = body_avoiding_ai_planner(plan_squares[plan_len-1].x, plan_squares[plan_len-1].y, cur_direction);
@@ -110,6 +171,7 @@ int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
             return 1;
         } else {
             // add the planned square to the set of bad squares
+            printf("adding (%d, %d) to bad squares\n",plan_squares[plan_len-1].x, plan_squares[plan_len-1].y);
             bad_squares[plan_squares[plan_len-1].y * 512 + plan_squares[plan_len-1].x] = 1;
             --plan_len;
             return body_avoiding_ai_planner(x, y, cur_direction);
@@ -137,6 +199,14 @@ void processAI()
 {
     if((plan_index >= plan_len) || (game->head->x == game->mouse.x && game->head->y == game->mouse.y)){ 
         //plan has ended, make new plan
+        printf("PLANNING PHASE:\n");
+        printf("Mouse At %d x %d\n",game->mouse.x, game->mouse.y);
+        SnakePart *current = game->head;
+        printf("Snake Head at %d x %d\n", current->x, current->y);
+        while(current->next != NULL){
+            current = current->next;
+            printf("Snake Body Part at %d x %d\n", current->x, current->y);
+        }
         plan_index = 0;
         plan_len = 0;
         make_plan();
@@ -148,6 +218,8 @@ void processAI()
     ++plan_index;
 }
 
+#define DRAW_PLAN 1
+
 void display()
 {
     processAI();
@@ -157,6 +229,7 @@ void display()
     glLoadIdentity();
     float offsetX = 1.0f/(game->width/2);
     float offsetY = 1.0f/(game->height/2);
+#if DRAW_PLAN
     // first draw the plan
     for(int i=0; i<plan_len; ++i) {
         int x_adjust = plan_squares[i].x - game->width/2;
@@ -171,6 +244,7 @@ void display()
         glVertex2f(x+offsetX,y);
         glEnd();
     }
+#endif 
     SnakePart * cur = game->head;
     glBegin(GL_QUADS);
     SnakePart mouse = game->mouse;
@@ -201,7 +275,6 @@ void display()
     }
 
     glFlush();
-
 
 }
 void Timer(int value)
