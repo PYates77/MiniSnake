@@ -6,7 +6,7 @@ enum SnakeDirection get_user_input_direction()
 	char direction[2];
     enum SnakeDirection dir = DIRECTION_POS_X;
 	printf("[u]p, [d]own, [l]eft, or [r]ight? ");
-	scanf("%s", direction);
+	scanf("%1s", direction);
     switch(*direction) {
         case('r'):
             printf("right\n");
