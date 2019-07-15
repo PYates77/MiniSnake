@@ -10,59 +10,67 @@ const int windowHeight = 512;
 const int refreshMillis = 50;
 const int screenOffsetX = 300;
 const int screenOffsetY = 100;
+SnakeGame *game;
 float temp = 0;
 void initGL(){
     glClearColor(0.0,0.0,0.0,1.0); //black background
 }
-int partAt(int x, int y){
-    cur = head;
+int partAt(int x, int y)
+{
+    SnakePart *cur = game->head;
     while(1){
         if(cur->x == x && cur->y == y)  return 1;
         if(!cur->next) return 0;
         cur = cur->next;
     }
 }
-void processAI(){
+
+void processAI()
+{
     //check to see which directions are valid
     int invalid[4];
-    invalid[0]= partAt(head->x+1,head->y);  //right
-    invalid[1]= partAt(head->x,head->y+1);  //up
-    invalid[2]= partAt(head->x-1, head->y); //left
-    invalid[3]= partAt(head->x, head->y-1); //down
+    invalid[0]= partAt(game->head->x+1,game->head->y);  //right
+    invalid[1]= partAt(game->head->x,game->head->y+1);  //up
+    invalid[2]= partAt(game->head->x-1, game->head->y); //left
+    invalid[3]= partAt(game->head->x, game->head->y-1); //down
     
     //start by setting the direction to any valid one
     int i=0;
-    while(invalid[direction]) {
-        direction = (direction+1)%4;
+    while(invalid[game->direction]) {
+        game->direction = (game->direction+1)%4;
         if(++i == 3) break;
     }
-    if(head->x != mouse.x || head->y != mouse.y){ //do nothing if you just ate
-        if(!invalid[0] && head->x < mouse.x){
-            direction = 0; //right
+    if(game->head->x != game->mouse.x || game->head->y != game->mouse.y){ //do nothing if you just ate
+        if(!invalid[0] && game->head->x < game->mouse.x){
+            game->direction = 0; //right
         }
-        else if (!invalid[2] && head->x > mouse.x){
-            direction = 2; //left 
+        else if (!invalid[2] && game->head->x > game->mouse.x){
+            game->direction = 2; //left 
         }
-        else if (!invalid[1] && head->y < mouse.y){
-            direction = 1; //up
+        else if (!invalid[1] && game->head->y < game->mouse.y){
+            game->direction = 1; //up
         }
         else if (!invalid[3]) {
-            direction = 3; //down 
+            game->direction = 3; //down 
         }
     }
 }
-void display(){
+void display()
+{
     processAI();
-    snake();
+    snake_tick(game);
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    cur = head;
-    float offsetX = 1.0f/(WIDTH/2);
-    float offsetY = 1.0f/(HEIGHT/2);
+    SnakePart * cur = game->head;
+    float offsetX = 1.0f/(game->width/2);
+    float offsetY = 1.0f/(game->height/2);
     glBegin(GL_QUADS);
-    float x = (float)(mouse.x-HEIGHT/2)/(HEIGHT/2);
-    float y = (float)(mouse.y-HEIGHT/2)/(HEIGHT/2);
+    SnakePart mouse = game->mouse;
+    int x_adjust = mouse.x-game->width/2;
+    int y_adjust = mouse.y-game->height/2;
+    float x = (float)(x_adjust)/(game->width/2);
+    float y = (float)(y_adjust)/(game->height/2);
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex2f(x,y);
     glVertex2f(x,y+offsetY);
@@ -70,8 +78,10 @@ void display(){
     glVertex2f(x+offsetX,y);
     glEnd();
     while(1){
-        float x = (float)(cur->x-HEIGHT/2)/(HEIGHT/2);
-        float y = (float)(cur->y-HEIGHT/2)/(HEIGHT/2);
+        int x_adjust = cur->x-game->width/2;
+        int y_adjust = cur->y-game->height/2;
+        float x = (float)(x_adjust)/(float)(game->width/2);
+        float y = (float)(y_adjust)/(float)(game->height/2);
         glBegin(GL_QUADS);
         glColor3f(1.0f, 1.0f, 1.0f);
         glVertex2f(x, y);
@@ -93,21 +103,13 @@ void Timer(int value){
 }
 int main(int argc, char** argv){
     srand(time(NULL));
-    head = (SnakePart*)malloc(sizeof(SnakePart));
-    head->x = WIDTH>>1;
-    head->y = HEIGHT>>1;
-    head->next = NULL;
-    head->prev = head;
-    tail = head;
-    mouse.x = rand()%WIDTH;
-    mouse.y = rand()%HEIGHT;
+    game = snake_init(windowHeight/16, windowWidth/16);
 
     glutInit(&argc, argv);
     //glutInitWindowSize(windowWidth, windowHeight);
     //glutInitWindowPosition(screenOffsetX,screenOffsetY);
     glutCreateWindow(title);
     glutDisplayFunc(display);
-    //glutSpecialFunc(specialKeys);
     glutTimerFunc(0, Timer, 0);
     initGL();
     glutMainLoop();
