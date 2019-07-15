@@ -120,6 +120,7 @@ extern inline void snake_tick(SnakeGame * game)
     SnakePart * cur;
     if(game->mouse_eaten){
         cur = (SnakePart*)malloc(sizeof(SnakePart));
+        cur->prev = NULL;
         cur->next = game->head;
         game->head->prev = cur;
         ++game->score;

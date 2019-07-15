@@ -33,4 +33,5 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(miniSnake snake_opengl.c highScore.c)
 
+# uncomment or modify this line for the ai snake games
 add_executable(planningSnake planning_ai.c)

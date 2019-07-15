@@ -92,7 +92,16 @@ int planned(int x, int y) {
     }
     x = x % game->width;
     y = y % game->height;
-    for (i=0; i<plan_len; ++i){
+
+    // if plan_index > current snake length, we can ignore the first plan_index - snake_len planned squares, 
+    // since the snake will already be past this point
+    int snake_len = game->score + 1;
+    int i0 = 0;
+    if (plan_index > snake_len) {
+        i0 = plan_index - snake_len;
+    }
+
+    for (i=i0; i<plan_len - plan_index; ++i){
         if(plan_squares[i].x == x && plan_squares[i].y == y) {
             return 1;
         }
@@ -108,11 +117,11 @@ int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
     invalid[2] = partAtLater(x-1, y, plan_len) || bad(x-1, y) || planned(x-1, y); //left
     invalid[3] = partAtLater(x,y-1, plan_len) || bad(x,y-1) || planned(x,y-1); //down
 
-    printf("Planning at %d, %d, invalid[] = {%d, %d, %d, %d}\n", x,y,invalid[0], invalid[1], invalid[2], invalid[3]);
+    //printf("Planning at %d, %d, invalid[] = {%d, %d, %d, %d}\n", x,y,invalid[0], invalid[1], invalid[2], invalid[3]);
 
     // if all directions are invalid, this is not a valid plan
     if (invalid[0] && invalid[1] && invalid[2] && invalid[3]) {
-        printf("NO VALID PATHS! BACKING UP!\n");
+        //printf("NO VALID PATHS! BACKING UP!\n");
         return 0;
     }
 
@@ -161,8 +170,6 @@ int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
                 }
                 plan_squares[plan_len].x = x;
                 break;
-            default:
-                printf("FATAL ERROR: DIRECTION INVALID\n");
         }
 
         /* handle overflow */
@@ -170,7 +177,7 @@ int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
         plan_squares[plan_len].y = plan_squares[plan_len].y % game->height;
 
         plan[plan_len] = cur_direction;
-        printf("Plan head (%d, %d). Adding direction %d to plan[%d] (%d, %d)\n", x, y, plan[plan_len], plan_len, plan_squares[plan_len].x, plan_squares[plan_len].y);
+        //printf("Plan head (%d, %d). Adding direction %d to plan[%d] (%d, %d)\n", x, y, plan[plan_len], plan_len, plan_squares[plan_len].x, plan_squares[plan_len].y);
         ++plan_len;
         
         int res = body_avoiding_ai_planner(plan_squares[plan_len-1].x, plan_squares[plan_len-1].y, cur_direction);
@@ -179,7 +186,7 @@ int body_avoiding_ai_planner(int x, int y, enum SnakeDirection cur_direction)
             return 1;
         } else {
             // add the planned square to the set of bad squares
-            printf("adding (%d, %d) to bad squares\n",plan_squares[plan_len-1].x, plan_squares[plan_len-1].y);
+            //printf("adding (%d, %d) to bad squares\n",plan_squares[plan_len-1].x, plan_squares[plan_len-1].y);
             bad_squares[plan_squares[plan_len-1].y * 512 + plan_squares[plan_len-1].x] = 1;
             --plan_len;
             return body_avoiding_ai_planner(x, y, cur_direction);
@@ -199,7 +206,7 @@ void make_plan()
     
     int ret = body_avoiding_ai_planner(game->head->x, game->head->y, game->direction);
     if (ret == 0) {
-        printf("\nNo valid plan found :(\n");
+        //printf("\nNo valid plan found :(\n");
     } 
 }
 
@@ -207,21 +214,21 @@ void processAI()
 {
     if((plan_index >= plan_len) || (game->head->x == game->mouse.x && game->head->y == game->mouse.y)){ 
         //plan has ended, make new plan
-        printf("PLANNING PHASE:\n");
-        printf("Mouse At %d x %d\n",game->mouse.x, game->mouse.y);
+        //printf("PLANNING PHASE:\n");
+        //printf("Mouse At %d x %d\n",game->mouse.x, game->mouse.y);
         SnakePart *current = game->head;
-        printf("Snake Head at %d x %d\n", current->x, current->y);
+        //printf("Snake Head at %d x %d\n", current->x, current->y);
         while(current->next != NULL){
             current = current->next;
-            printf("Snake Body Part at %d x %d\n", current->x, current->y);
+            //printf("Snake Body Part at %d x %d\n", current->x, current->y);
         }
         plan_index = 0;
         plan_len = 0;
         make_plan();
-        printf("Completed plan of length %d\n", plan_len);
+        //printf("Completed plan of length %d\n", plan_len);
     }
 
-    printf("EXECUTING PLAN(%d)\n", plan_index);
+    //printf("EXECUTING PLAN(%d)\n", plan_index);
     game->direction = plan[plan_index];
     ++plan_index;
 }
@@ -237,7 +244,11 @@ void display()
     float offsetY = 1.0f/(game->height/2);
 #if DRAW_PLAN
     // first draw the plan
-    for(int i=0; i<plan_len; ++i) {
+    int i0 = 0;
+    if (plan_index > game->score + 1) {
+        i0 = plan_index - (game->score + 1);
+    }
+    for(int i=i0; i<plan_len; ++i) {
         int x_adjust = plan_squares[i].x - game->width/2;
         int y_adjust = plan_squares[i].y - game->height/2;
         float x = (float)(x_adjust)/(game->width/2);
