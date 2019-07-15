@@ -31,5 +31,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(miniSnake
-    planning_ai.c highScore.c)
+add_executable(miniSnake snake_opengl.c highScore.c)
+
+add_executable(planningSnake planning_ai.c)

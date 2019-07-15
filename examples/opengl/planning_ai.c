@@ -1,9 +1,17 @@
 //
 // Created by Paul on 2/21/2018.
 //
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif 
+
 #include "snake.h"
 #include <stdio.h>
+
+#define DRAW_PLAN 0
+
 const char title[] = "Snake";
 const int windowWidth = 512;
 const int windowHeight = 512;
@@ -217,8 +225,6 @@ void processAI()
     game->direction = plan[plan_index];
     ++plan_index;
 }
-
-#define DRAW_PLAN 1
 
 void display()
 {

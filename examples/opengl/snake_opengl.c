@@ -2,7 +2,13 @@
 // Created by Paul on 2/21/2018.
 //
 #define GLUT_DISABLE_ATEXIT_HACK
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif 
+
 #include <time.h>
 #include "snake.h"
 const char title[] = "Snake";
